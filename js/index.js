@@ -17,32 +17,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-async function loginGoogle(){
-    const provider = new GoogleAuthProvider();
-    const auth = getAuth();
-    signInWithPopup(auth, provider)
-    .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        console.log(user);
-    }).catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-    })
-}
-
-
-
 async function getMyContacts(){
-  const myUserId = "myUserIdDePrueba";
   let listaDeContactos = "";
   const users = await getDocs(collection(db, `users`));
   users.forEach((doc) => {
@@ -61,7 +36,8 @@ async function getMyContacts(){
 
 async function getMessagesUser(){
   const uid = localStorage.getItem("uidUsuarioContact");
-  const myUserId = "myUserIdDePrueba";
+  const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+  const myUserId = dataUser.uid;
 
   console.log(`${myUserId}SMS${uid}`);
 
@@ -150,12 +126,15 @@ $( "#addUserAction" ).click(async function() {
 // ENVIAR MENSAJE
 $( ".btnSend" ).click(async function() {
   let message = $('#message').val();
+  const uid = localStorage.getItem("uidUsuarioContact");
 
-    if(message != ''){
-      const uid = localStorage.getItem("uidUsuarioContact");
-      const myUserId = "myUserIdDePrueba";
-      const name = "Mark Romero";
-      const image = "./assets/default.jpg";  
+    if(message != '' && uid != null){
+      
+      const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+      const myUserId = dataUser.uid;
+      const name = dataUser.displayName;
+      const image = dataUser.photoURL;
+
       try {
         const docRef = await addDoc(collection(db, `${myUserId}SMS${uid}`), {
           name: name,
@@ -178,12 +157,14 @@ $( ".btnSend" ).click(async function() {
 $(document).on('keypress',async function(e) {
   if(e.which == 13) {
     let message = $('#message').val();
+    const uid = localStorage.getItem("uidUsuarioContact");
 
-    if(message != ''){
-      const uid = localStorage.getItem("uidUsuarioContact");
-      const myUserId = "myUserIdDePrueba";
-      const name = "Mark Romero";
-      const image = "./assets/default.jpg";
+    if(message != '' && uid != null){
+
+      const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+      const myUserId = dataUser.uid;
+      const name = dataUser.displayName;
+      const image = dataUser.photoURL;
       
       try {
         const docRef = await addDoc(collection(db, `${myUserId}SMS${uid}`), {
@@ -220,3 +201,54 @@ $( ".user-profile" ).click(async function() {
   console.log('here');
   setTimeout(()=> { getMessagesUser(); },500);
 });
+
+
+
+// Login google
+async function loginGoogle(){
+  const provider = new GoogleAuthProvider();
+  const auth = getAuth();
+  signInWithPopup(auth, provider)
+  .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      localStorage.setItem("dataUser", JSON.stringify(user));
+      saveDataUser();
+  }).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+  })
+}
+
+async function saveDataUser(){
+  const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+
+  try {
+    const docRef = await addDoc(collection(db, `users`), {
+      name: dataUser.displayName,
+      image: dataUser.photoURL,
+      uid: dataUser.uid,
+    });
+    
+      window.location.href = "./home.html";
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+
+
+}
+
+$( "#loginGoogle" ).click(async function() {
+  loginGoogle();
+});
+
+
+
