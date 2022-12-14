@@ -31,10 +31,7 @@ async function loginGoogle(){
         const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
-        console.log(user);
-        // ...
     }).catch((error) => {
-        // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
@@ -43,6 +40,14 @@ async function loginGoogle(){
         const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
     })
+
+    console.log(user);
+    const docRef = await addDoc(collection(db, "usersLogin"), {
+        name: user.displayName,
+        image: user.photoURL,
+        uid: user.uid
+      });
+    console.log(docRef);
 }
 
 loginGoogle();
