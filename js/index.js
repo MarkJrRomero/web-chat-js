@@ -42,32 +42,39 @@ async function getMessagesUser(){
   console.log(`${myUserId}SMS${uid}`);
 
   let listaDeSms = ""; 
-  const users = await getDocs(query(collection(db, `${myUserId}SMS${uid}`), orderBy('time',"desc")));
-  users.forEach((doc) => {
+  let users;
+  users = await getDocs(query(collection(db, `${myUserId}SMS${uid}`), orderBy('time',"desc")));
+  console.log(users.docs.length);
+  if (users.docs.length == 0){
+    users = await getDocs(query(collection(db, `${uid}SMS${myUserId}`), orderBy('time',"desc")));
+  }
+    users.forEach((doc) => {
     
-    let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
-
-    if (doc.data().uid == myUserId){
-      listaDeSms = listaDeSms + 
-      `<div class="message-me">
-            <div class="profile-me-div">
-                <img class="profile-me" src="${image}" alt="${doc.data().name}">
-                <span class="name-me">You</span>
-            </div>
-            <p class="text-me">${doc.data().message}</p>
-        </div>`
-    }else{
-      listaDeSms = listaDeSms + 
-      `<div class="message-friend">
-            <div class="profile-message-div">
-                <img class="profile-message" src="${image}" alt="${doc.data().name}">
-                <span class="name-message">${doc.data().name}</span>
-            </div>
-            <p class="text-message">${doc.data().message}</p>
-        </div>`
-    }
-    
-  });
+      let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
+  
+      if (doc.data().uid == myUserId){
+        listaDeSms = listaDeSms + 
+        `<div class="message-me">
+              <div class="profile-me-div">
+                  <img class="profile-me" src="${image}" alt="${doc.data().name}">
+                  <span class="name-me">You</span>
+              </div>
+              <p class="text-me">${doc.data().message}</p>
+          </div>`
+      }else{
+        listaDeSms = listaDeSms + 
+        `<div class="message-friend">
+              <div class="profile-message-div">
+                  <img class="profile-message" src="${image}" alt="${doc.data().name}">
+                  <span class="name-message">${doc.data().name}</span>
+              </div>
+              <p class="text-message">${doc.data().message}</p>
+          </div>`
+      }
+      
+    }); 
+  
+  
   console.log(listaDeSms);
   $('#chat-box-messages').html(listaDeSms);
 }
