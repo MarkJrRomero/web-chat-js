@@ -35,7 +35,7 @@ async function getMyContacts(){
 
 
 async function getMessagesUser(){
-  console.log('reload')
+  // console.log('reload')
   const uid = localStorage.getItem("uidUsuarioContact");
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
   const myUserId = dataUser.uid;
