@@ -1,0 +1,74 @@
+
+body {
+	display: grid;
+    grid-template: calc(100vh) 100px / 1.5fr 5fr;
+    grid-template-areas: "users chat";
+    overflow: hidden;
+}
+
+
+.hijo-users {
+    display: grid;
+    grid-area: users;
+    background-color: rgb(31, 30, 30);
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    overflow-y: scroll;
+    overflow-x: none;
+}
+.hijo-chat {
+    grid-area: chat;
+    background-color: rgba(63, 62, 62, 0.829);
+}
+
+.users-chat{
+    display: flex;
+    background-color: rgba(77, 79, 80, 0.336);
+    height: 50px;
+    width: 250px;
+    margin: 10px;
+    border-radius: 10px;
+    align-items: center;
+}
+
+.user-profile{
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+.last-message{
+    margin: 5px;
+    color: rgba(240, 255, 255, 0.37);
+    font-size: 15px;
+}
+
+.time-message{
+    margin: 10px;
+    color: rgba(229, 240, 240, 0.568);
+    font-size: 10px;
+}
+
+@media screen and (max-width: 600px) {
+    .users-chat {
+        width: 50px;
+    }
+
+  }
+
+  @media screen and (min-width: 601px) {
+    body{
+        grid-template: calc(100vh) 100px / 3.5fr 5fr;
+        grid-template-areas: "users chat";
+    }
+  }
+
+  @media screen and (min-width: 1001px) {
+    body{
+        grid-template: calc(100vh) 100px / 1.5fr 5fr;
+        grid-template-areas: "users chat";
+    }
+  }
+
