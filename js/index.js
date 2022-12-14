@@ -35,11 +35,12 @@ async function getMyContacts(){
 
 
 async function getMessagesUser(){
+  console.log('reload')
   const uid = localStorage.getItem("uidUsuarioContact");
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
   const myUserId = dataUser.uid;
 
-  console.log(`${myUserId}SMS${uid}`);
+  // console.log(`${myUserId}SMS${uid}`);
 
   let listaDeSms = ""; 
   let users = await getDocs(query(collection(db, `${myUserId}SMS${uid}`), orderBy('time',"desc")));
@@ -71,7 +72,7 @@ async function getMessagesUser(){
     }); 
   
   
-  console.log(listaDeSms);
+  // console.log(listaDeSms);
   $('#chat-box-messages').html(listaDeSms);
 }
 
@@ -221,12 +222,12 @@ await getMyContacts();
 
 
 $( ".verSmsUid" ).click(async function() {
-  console.log('here');
+  // console.log('here');
   setTimeout(()=> { getMessagesUser(); },500);
 });
 
 $( ".user-profile" ).click(async function() {
-  console.log('here');
+  // console.log('here');
   setTimeout(()=> { getMessagesUser(); },500);
 });
 
@@ -279,4 +280,9 @@ $( "#loginGoogle" ).click(async function() {
 });
 
 
+function buscarMensajes() {
+  setInterval(getMessagesUser, 500);
+}
+
+buscarMensajes();
 
