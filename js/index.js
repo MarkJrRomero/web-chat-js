@@ -145,7 +145,7 @@ $( ".btnSend" ).click(async function() {
      
       let today = new Date();
       let now = today.toLocaleString();
-      console.log(now);
+
       try {
 
         await addDoc(collection(db, collect1), {
@@ -189,6 +189,9 @@ $(document).on('keypress',async function(e) {
       let collect1 = `${myUserId}SMS${uid}`;
       let collect2 = `${uid}SMS${myUserId}`;
       
+      let today = new Date();
+      let now = today.toLocaleString();
+
       try {
         
         await addDoc(collection(db, collect1), {
@@ -196,7 +199,7 @@ $(document).on('keypress',async function(e) {
           image: image,
           uid: myUserId,
           message: message,
-          time: Date.now()
+          time: now
         });
 
         await addDoc(collection(db, collect2), {
@@ -204,7 +207,7 @@ $(document).on('keypress',async function(e) {
           image: image,
           uid: myUserId,
           message: message,
-          time: Date.now()
+          time: now
         });
         
         $('#message').val('')
