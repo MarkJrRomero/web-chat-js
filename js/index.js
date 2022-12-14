@@ -42,12 +42,8 @@ async function getMessagesUser(){
   console.log(`${myUserId}SMS${uid}`);
 
   let listaDeSms = ""; 
-  let users;
-  users = await getDocs(query(collection(db, `${myUserId}SMS${uid}`), orderBy('time',"desc")));
-  console.log(users.docs.length);
-  if (users.docs.length == 0){
-    users = await getDocs(query(collection(db, `${uid}SMS${myUserId}`), orderBy('time',"desc")));
-  }
+  let users = await getDocs(query(collection(db, `${myUserId}SMS${uid}`), orderBy('time',"desc")));
+
     users.forEach((doc) => {
     
       let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
@@ -143,18 +139,20 @@ $( ".btnSend" ).click(async function() {
       const name = dataUser.displayName;
       const image = dataUser.photoURL;
 
-      let collect = `${myUserId}SMS${uid}`;
-      let users;
-
-      users = await getDocs(query(collection(db, collect), orderBy('time',"desc")));
-      
-      if (users.docs.length == 0){
-        collect = `${uid}SMS${myUserId}`;
-      }
-
-      console.log(collect);
+      let collect1 = `${myUserId}SMS${uid}`;
+      let collect2 = `${uid}SMS${myUserId}`;
+     
       try {
-        const docRef = await addDoc(collection(db, collect), {
+
+        await addDoc(collection(db, collect1), {
+          name: name,
+          image: image,
+          uid: myUserId,
+          message: message,
+          time: Date.now()
+        });
+
+        await addDoc(collection(db, collect2), {
           name: name,
           image: image,
           uid: myUserId,
@@ -183,9 +181,21 @@ $(document).on('keypress',async function(e) {
       const myUserId = dataUser.uid;
       const name = dataUser.displayName;
       const image = dataUser.photoURL;
+
+      let collect1 = `${myUserId}SMS${uid}`;
+      let collect2 = `${uid}SMS${myUserId}`;
       
       try {
-        const docRef = await addDoc(collection(db, `${myUserId}SMS${uid}`), {
+        
+        await addDoc(collection(db, collect1), {
+          name: name,
+          image: image,
+          uid: myUserId,
+          message: message,
+          time: Date.now()
+        });
+
+        await addDoc(collection(db, collect2), {
           name: name,
           image: image,
           uid: myUserId,
