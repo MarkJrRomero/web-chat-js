@@ -143,6 +143,9 @@ $( ".btnSend" ).click(async function() {
       let collect1 = `${myUserId}SMS${uid}`;
       let collect2 = `${uid}SMS${myUserId}`;
      
+      let today = new Date();
+      let now = today.toLocaleString();
+      console.log(now);
       try {
 
         await addDoc(collection(db, collect1), {
@@ -150,7 +153,7 @@ $( ".btnSend" ).click(async function() {
           image: image,
           uid: myUserId,
           message: message,
-          time: Date.now()
+          time: now
         });
 
         await addDoc(collection(db, collect2), {
@@ -158,7 +161,7 @@ $( ".btnSend" ).click(async function() {
           image: image,
           uid: myUserId,
           message: message,
-          time: Date.now()
+          time: now
         });
         
         $('#message').val('')
