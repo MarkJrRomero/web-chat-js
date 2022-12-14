@@ -135,6 +135,7 @@ $( ".btnSend" ).click(async function() {
   let message = $('#message').val();
   const uid = localStorage.getItem("uidUsuarioContact");
 
+
     if(message != '' && uid != null){
       
       const dataUser = JSON.parse(localStorage.getItem("dataUser"));
@@ -142,8 +143,18 @@ $( ".btnSend" ).click(async function() {
       const name = dataUser.displayName;
       const image = dataUser.photoURL;
 
+      let collect = `${myUserId}SMS${uid}`;
+      let users;
+
+      users = await getDocs(query(collection(db, collect), orderBy('time',"desc")));
+      
+      if (users.docs.length == 0){
+        collect = `${uid}SMS${myUserId}`;
+      }
+
+      console.log(collect);
       try {
-        const docRef = await addDoc(collection(db, `${myUserId}SMS${uid}`), {
+        const docRef = await addDoc(collection(db, collect), {
           name: name,
           image: image,
           uid: myUserId,
