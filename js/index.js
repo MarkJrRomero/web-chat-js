@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 
@@ -55,6 +55,7 @@ async function getMyContacts(){
         `<div class="users-chat">
           <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}">
           <span class="last-message">${doc.data().name}</span>
+          <span class="last-message">Online: ${doc.data().online}</span>
           <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
         </div>`
       }
@@ -258,33 +259,58 @@ async function saveDataUser(){
 
   let users = await getDocs(query(collection(db, 'users')));
   let existe = false;
+  let adentro = false;
+  let docRef;
   users.forEach((docs) => {
     if(docs.data().uid == dataUser.email){
       existe = true;
+      docRef = doc(db, "users", docs.id);
+    }
+    if(docs.data().online == true){
+      adentro = true;
     }
   });
   
-  if(existe == false){
+  if(existe == true){
+
+    if(adentro == false){
+      
+      const data = {
+        online: true
+      };
+  
+      updateDoc(docRef, data)
+      .then(docRef => {
+        window.location.href = "./home.html";
+      })
+      .catch(error => {
+          console.log(error);
+      })
+    }else{
+      localStorage.clear();
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Ya tienes una sesión activa!',
+      })
+    }
+    
+
+  }else{
     try {
       const docRef = await addDoc(collection(db, `users`), {
         name: dataUser.displayName,
         image: dataUser.photoURL,
         uid: dataUser.email,
+        online: true,
       });
       
         window.location.href = "./home.html";
     } catch (e) {
       console.error("Error al guardar usuario: ", e);
     }
-  }else{
-    localStorage.clear();
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Ya tienes una sesión activa!',
-    })
+    
   }
-
 
 }
 
@@ -343,14 +369,26 @@ $( ".logout" ).click(async function() {
   }).then(async (result) => {
     if (result.isConfirmed) {
 
-          localStorage.clear();
-          users.forEach((docs) => {
+          users.forEach(async (docs) => {
             if(docs.data().uid == uid){
-              let docRef = doc(db, "users", docs.id);
-              deleteDoc(docRef);
+
+              const docRef = doc(db, "users", docs.id);
+
+              const data = {
+                online: false
+              };
+
+              updateDoc(docRef, data)
+              .then(docRef => {
+                  localStorage.clear();
+                  validarLogin();
+              })
+              .catch(error => {
+                  console.log(error);
+              })
+
             }
           });
-          validarLogin();
 
     }
   })
