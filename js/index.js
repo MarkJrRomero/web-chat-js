@@ -48,7 +48,7 @@ async function getMyContacts(){
   users.forEach((doc) => {
     // console.log(doc.data().first);
     const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-    if(dataUser.uid != doc.data().uid){
+    if(dataUser.email != doc.data().uid){
       listaDeContactos = listaDeContactos + 
       `<div class="users-chat">
         <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
@@ -321,7 +321,7 @@ $( "#loginGoogle" ).click(async function() {
 
 function buscarMensajes() {
   setInterval(getMessagesUser, 500);
-  setInterval(getMyContacts, 3000);
+  setInterval(getMyContacts, 500);
 }
 
 
@@ -354,7 +354,7 @@ $( ".logout" ).click(async function() {
   localStorage.clear();
   let uid = $('.logout').attr('uid');
   let users = await getDocs(query(collection(db, 'users')));
-  // console.log(users);
+  // console.log(uid);
   users.forEach((docs) => {
     if(docs.data().uid == uid){
       let docRef = doc(db, "users", docs.id);
