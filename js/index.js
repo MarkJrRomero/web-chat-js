@@ -53,7 +53,7 @@ async function getMyContacts(){
       if(dataUser.email != doc.data().uid){
         listaDeContactos = listaDeContactos + 
         `<div class="users-chat">
-          <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
+          <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}">
           <span class="last-message">${doc.data().name}</span>
           <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
         </div>`
@@ -86,7 +86,7 @@ function getMessagesUser(){
         listaDeSms = listaDeSms + 
         `<div class="message-me">
               <div class="profile-me-div">
-                  <img class="profile-me" src="${image}" alt="${doc.data().name}">
+                  <img class="profile-me" src="${image}" >
                   <span class="name-me">You</span>
               </div>
               <p class="text-me">${doc.data().message}</p>
@@ -95,14 +95,14 @@ function getMessagesUser(){
         listaDeSms = listaDeSms + 
         `<div class="message-friend">
               <div class="profile-message-div">
-                  <img class="profile-message" src="${image}" alt="${doc.data().name}">
+                  <img class="profile-message" src="${image}">
                   <span class="name-message">${doc.data().name}</span>
               </div>
               <p class="text-message">${doc.data().message}</p>
           </div>`
 
           let userProfileHtml = 
-            ` <img class="profile-image" src="${image}" alt="${doc.data().name}">
+            ` <img class="profile-image" src="${image}">
               <span class="profile-name">${doc.data().name}</span>
               <span class="profile-name">(In the chat)</span>
             `;
@@ -138,7 +138,7 @@ $( "#addUser" ).click(async function() {
   let userName = $('select[name="find-user-input"] option:selected').text();
   let userImage = $('select[name="find-user-input"] option:selected').attr('image');
   
-  let body = `<img class='user-add-image' src='${userImage}' alt='${userName}'>`;
+  let body = `<img class='user-add-image' src='${userImage}'>`;
 
   $('#modalAddUserLabel').html("Agregar usuario: "+userName);
   $('#modalAddUserBody').html(body);
@@ -302,13 +302,13 @@ async function getUserProfile(){
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
 
   let userProfileHtml = 
-  ` <img class="profile-image" src="${dataUser.photoURL}" alt="${dataUser.displayName}">
+  ` <img class="profile-image" src="${dataUser.photoURL}">
     <span class="profile-name">${dataUser.displayName}</span>
     <button type="button" uid="${dataUser.email}" class="btn btn-danger logout"><i class="fa-solid fa-right-from-bracket"></i></button>
     
   `;
 
-  let navProfileHtml = `<img class="nav-profile NavImg" src="${dataUser.photoURL}" alt="${dataUser.displayName}">
+  let navProfileHtml = `<img class="nav-profile NavImg" src="${dataUser.photoURL}">
   <button type="button" uid="${dataUser.email}" class="btn btn-danger logout NavBtn"><i class="fa-solid fa-right-from-bracket"></i></button>`
 
   $('#nav-profile-div').html(navProfileHtml);
