@@ -1,7 +1,7 @@
 
 body {
 	display: grid;
-    grid-template: calc(100vh) 100px / 1fr 5fr;
+    grid-template: calc(100vh) 100px / 1.2fr 5fr;
     grid-template-areas: "users chat";
     overflow: hidden;
 }
