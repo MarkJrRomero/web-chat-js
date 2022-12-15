@@ -48,7 +48,7 @@ async function getMyContacts(){
   users.forEach((doc) => {
     // console.log(doc.data().first);
     const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-    if(dataUser.uid != doc.data().uid){
+    if(dataUser.email != doc.data().uid){
       listaDeContactos = listaDeContactos + 
       `<div class="users-chat">
         <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
