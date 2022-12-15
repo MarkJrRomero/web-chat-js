@@ -69,12 +69,12 @@ function getMessagesUser(){
   const myUserId = dataUser.email;
   
   // console.log(`${myUserId}SMS${uid}`);
-  onSnapshot(collection(db, `${myUserId}SMS${uid}`), (querySnapshot) => {
+  onSnapshot(query(collection(db, `${myUserId}SMS${uid}`), orderBy("time","desc")), (querySnapshot) => {
     console.log('change')
     // console.log(querySnapshot);
     let listaDeSms = ""; 
     querySnapshot.forEach((doc) => {
-      
+      console.log(doc.data());
       let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
       
   
@@ -182,8 +182,7 @@ $( ".btnSend" ).click(async function() {
       let collect1 = `${myUserId}SMS${uid}`;
       let collect2 = `${uid}SMS${myUserId}`;
      
-      let today = new Date();
-      let now = today.toLocaleString();
+      let now = Date.now();
 
       try {
 
@@ -228,8 +227,7 @@ $(document).on('keypress',async function(e) {
       let collect1 = `${myUserId}SMS${uid}`;
       let collect2 = `${uid}SMS${myUserId}`;
       
-      let today = new Date();
-      let now = today.toLocaleString();
+      let now = Date.now();
 
       try {
         
