@@ -43,22 +43,26 @@ await validarLogin();
 
 
 async function getMyContacts(){
-  let listaDeContactos = "";
-  const users = await getDocs(collection(db, `users`));
-  users.forEach((doc) => {
-    // console.log(doc.data().first);
-    const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-    if(dataUser.email != doc.data().uid){
-      listaDeContactos = listaDeContactos + 
-      `<div class="users-chat">
-        <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
-        <span class="last-message">${doc.data().name}</span>
-        <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
-      </div>`
-    }
-  });
-  // console.log(listaUsers);
-  $('#myContacts').html(listaDeContactos);
+ 
+
+  onSnapshot(collection(db, `users`), (querySnapshot) => {
+    let listaDeContactos = "";
+    querySnapshot.forEach((doc) => {
+      // console.log('change users')
+      const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+      if(dataUser.email != doc.data().uid){
+        listaDeContactos = listaDeContactos + 
+        `<div class="users-chat">
+          <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
+          <span class="last-message">${doc.data().name}</span>
+          <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
+        </div>`
+      }
+    });
+    // console.log(listaUsers);
+    $('#myContacts').html(listaDeContactos);
+
+  })
 }
 
 
@@ -70,11 +74,11 @@ function getMessagesUser(){
   
   // console.log(`${myUserId}SMS${uid}`);
   onSnapshot(query(collection(db, `${myUserId}SMS${uid}`), orderBy("time","desc")), (querySnapshot) => {
-    console.log('change')
+    // console.log('change')
     // console.log(querySnapshot);
     let listaDeSms = ""; 
     querySnapshot.forEach((doc) => {
-      console.log(doc.data());
+      // console.log(doc.data());
       let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
       
   
@@ -166,10 +170,10 @@ $( "#addUser" ).click(async function() {
 // });
 
 
-// ENVIAR MENSAJE
-$( ".btnSend" ).click(async function() {
-  let message = $('#message').val();
-  const uid = localStorage.getItem("uidUsuarioContact");
+async function sendSms(){
+
+    let message = $('#message').val();
+    const uid = localStorage.getItem("uidUsuarioContact");
 
 
     if(message != '' && uid != null){
@@ -183,8 +187,10 @@ $( ".btnSend" ).click(async function() {
       let collect2 = `${uid}SMS${myUserId}`;
      
       let now = Date.now();
-
+      
       try {
+
+        $('#message').val('')
 
         await addDoc(collection(db, collect1), {
           name: name,
@@ -202,58 +208,21 @@ $( ".btnSend" ).click(async function() {
           time: now
         });
         
-        $('#message').val('')
-        // getMessagesUser();
+
       } catch (e) {
         console.error("Error adding document: ", e);
       }
   }
-  
+}
+
+// ENVIAR MENSAJE
+$( ".btnSend" ).click(async function() {
+  sendSms();
 });
 
 
 $(document).on('keypress',async function(e) {
-  if(e.which == 13) {
-    let message = $('#message').val();
-    const uid = localStorage.getItem("uidUsuarioContact");
-
-    if(message != '' && uid != null){
-
-      const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-      const myUserId = dataUser.email;
-      const name = dataUser.displayName;
-      const image = dataUser.photoURL;
-
-      let collect1 = `${myUserId}SMS${uid}`;
-      let collect2 = `${uid}SMS${myUserId}`;
-      
-      let now = Date.now();
-
-      try {
-        
-        await addDoc(collection(db, collect1), {
-          name: name,
-          image: image,
-          uid: myUserId,
-          message: message,
-          time: now
-        });
-
-        await addDoc(collection(db, collect2), {
-          name: name,
-          image: image,
-          uid: myUserId,
-          message: message,
-          time: now
-        });
-        
-        $('#message').val('')
-        // getMessagesUser();
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
-  }
+  sendSms();
 });
 
 
@@ -284,16 +253,33 @@ async function loginGoogle(){
 async function saveDataUser(){
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
 
-  try {
-    const docRef = await addDoc(collection(db, `users`), {
-      name: dataUser.displayName,
-      image: dataUser.photoURL,
-      uid: dataUser.email,
-    });
-    
-      window.location.href = "./home.html";
-  } catch (e) {
-    console.error("Error al guardar usuario: ", e);
+  let users = await getDocs(query(collection(db, 'users')));
+  let existe = false;
+  users.forEach((docs) => {
+    if(docs.data().uid == dataUser.email){
+      existe = true;
+    }
+  });
+  
+  if(existe == false){
+    try {
+      const docRef = await addDoc(collection(db, `users`), {
+        name: dataUser.displayName,
+        image: dataUser.photoURL,
+        uid: dataUser.email,
+      });
+      
+        window.location.href = "./home.html";
+    } catch (e) {
+      console.error("Error al guardar usuario: ", e);
+    }
+  }else{
+    localStorage.clear();
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Ya tienes una sesión activa!',
+    })
   }
 
 
@@ -322,7 +308,12 @@ async function getUserProfile(){
     
   `;
 
+  let navProfileHtml = `<img class="nav-profile NavImg" src="${dataUser.photoURL}" alt="${dataUser.displayName}">
+  <button type="button" uid="${dataUser.email}" class="btn btn-danger logout NavBtn"><i class="fa-solid fa-right-from-bracket"></i></button>`
+
+  $('#nav-profile-div').html(navProfileHtml);
   $('#me-profile').html(userProfileHtml);
+  
 
 }
 
@@ -335,17 +326,32 @@ if(dataUser != null){
 
 // LogoutGoogle
 $( ".logout" ).click(async function() {
-  localStorage.clear();
+
   let uid = $('.logout').attr('uid');
-  let users = await getDocs(query(collection(db, 'users')));
-  // console.log(uid);
-  users.forEach((docs) => {
-    if(docs.data().uid == uid){
-      let docRef = doc(db, "users", docs.id);
-      deleteDoc(docRef);
+  let users =  await getDocs(query(collection(db, 'users')));
+
+  Swal.fire({
+    title: 'Seguro que quieres cerrar la sesion?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+
+          localStorage.clear();
+          users.forEach((docs) => {
+            if(docs.data().uid == uid){
+              let docRef = doc(db, "users", docs.id);
+              deleteDoc(docRef);
+            }
+          });
+          validarLogin();
+
     }
-  });
-  validarLogin();
+  })
+
 });
 
 
@@ -353,3 +359,7 @@ $( ".btnEmpanada" ).click(async function() {
   // console.log('here');
   getMessagesUser();
 });
+
+
+// let time = new firebase.firestore.timestamp.now();
+// console.log(time);

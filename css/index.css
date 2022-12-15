@@ -134,6 +134,7 @@ body {
     width: 95%;
     height: 95%;
     border-radius: 50px;
+    text-align: center;
 }
 
 .chat-box-messages{
@@ -284,6 +285,24 @@ body {
     height: 50%;
 }
 
+.nav-profile{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+
+#nav-profile-content{
+    padding: 20px;
+}
+
+.NavBtn{
+    margin-right: 5px;
+}
+
+.NavImg{
+    margin-left: 5px;
+}
 
 /* Responsive */
 @media screen and (max-width: 600px) {
@@ -313,11 +332,16 @@ body {
 
     .chat-box{
         width: 100%;
-        height: 100vh;
+        height: 90vh;
       }
 
       .verSmsUid{
         display: none;
+    }
+
+
+    #nav-profile-div{
+        display: flex !important;
     }
   }
 
