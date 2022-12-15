@@ -260,11 +260,6 @@ $(document).on('keypress',async function(e) {
 
 
 
-
-await getMyContacts();
-
-
-
 $( ".verSmsUid" ).click(async function() {
   // console.log('here');
   setTimeout(()=> { getMessagesUser(); },500);
@@ -351,6 +346,7 @@ const dataUser = JSON.parse(localStorage.getItem("dataUser"));
 if(dataUser != null){
   buscarMensajes();
   getUserProfile();
+  await getMyContacts();
 }
 
 // LogoutGoogle
