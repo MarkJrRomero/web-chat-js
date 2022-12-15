@@ -98,7 +98,7 @@ function getMessagesUser(){
                   <img class="profile-message" src="${image}">
                   <span class="name-message">${doc.data().name}</span>
               </div>
-              <p class="text-message">${doc.data().message}</p>
+              <p class="text-me">${doc.data().message}</p>
           </div>`
 
           let userProfileHtml = 
@@ -222,7 +222,10 @@ $( ".btnSend" ).click(async function() {
 
 
 $(document).on('keypress',async function(e) {
-  sendSms();
+  if(e.keyCode == 13)
+  {
+    sendSms();
+  }
 });
 
 
@@ -308,7 +311,7 @@ async function getUserProfile(){
     
   `;
 
-  let navProfileHtml = `<img class="nav-profile NavImg" src="${dataUser.photoURL}">
+  let navProfileHtml = `<img class="nav-profile" src="${dataUser.photoURL}">
   <button type="button" uid="${dataUser.email}" class="btn btn-danger logout NavBtn"><i class="fa-solid fa-right-from-bracket"></i></button>`
 
   $('#nav-profile-div').html(navProfileHtml);

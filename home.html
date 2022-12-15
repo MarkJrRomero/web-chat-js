@@ -16,7 +16,7 @@
 </head>
 <body>
 
-    <!-- Modal para agregar usuario  -->
+    <!-- Modal para agregar usuario 
     <div class="modal fade" id="modalAddUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
@@ -33,10 +33,10 @@
             </div>
         </div>
         </div>
-    </div>
+    </div> -->
 
     
-    <div class="hijo-users">
+    <div id="myContacts" class="hijo-users">
 
         <!-- Buscador de usuarios -->
         <!-- <div class="find-user-div">
@@ -50,95 +50,55 @@
 
 
 
-        <div id="myContacts">
-     
-        </div>
-
-
     </div>
 
     <div class="hijo-chat">
 
-        <nav id="nav-profile-div" class="navbar navbar-expand-lg navbar-dark bg-dark" style="display: none;">
-            <div id="nav-profile-content" class="container-fluid">
+        <nav id="nav-profile-div" class="navbar navbar-expand-lg navbar-dark bg-dark" style="display: none">
+            <div id="nav-profile" class="container-fluid">
                 
             </div>
         </nav>
- 
-        <div class="container">
-            <div class="row">
-
-              <div class="col-8 chat-box">
-                <div class="content-chat-box">
-
-                        <div id="chat-box-messages" class="chat-box-messages">
-
-                            
-                            <!-- <div class="message-me">
-                                <div class="profile-me-div">
-                                    <img class="profile-me" src="./assets/default.jpg" alt="user_profile">
-                                    <span class="name-me">You</span>
-                                </div>
-                                <p class="text-me">Hola nada cule pava Hola nada cule pava Hola nada cule pava Hola nada cule pava Hola nada cule pava</p>
-                            </div>
-
-                            <div class="message-friend">
-                                <div class="profile-message-div">
-                                    <img class="profile-message" src="https://www.dzoom.org.es/wp-content/uploads/2020/02/portada-foto-perfil-redes-sociales-consejos.jpg" alt="user_profile">
-                                    <span class="name-message">Daniela Castro</span>
-                                </div>
-                                <p class="text-message">Hola como esta todo Hola como esta todo Hola como esta todo Hola como esta todo Hola como esta todo</p>
-                            </div> -->
 
 
-                           
+                <div class="col-8 chat-box">
+                    <!-- contenedor de la parte para ver y enviar mensajes-->
+                    <div class="content-chat-box">
+                        <!-- contenedor de los mensajes -->
+                        <div id="chat-box-messages" class="chat-box-messages"></div>
+                        <!-- contenedor de los mensajes -->
 
-
-                           
-                          
-        
-                        </div>
-
+                        <!-- barra para enviar mensaje -->
                         <div class="row chat-send-messages">
                             <input id="message" class="send-messages" type="text" />
                             <button type="button" class="btn btn-success btnSend"> 
                                 <i class="fa-sharp fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
-
-                        
-            
-                </div>
-              </div>
-
-              <div class="col-4 user-box">
-                <div class="content-user-box">
-                    
-                    <div id="me-profile" class="me-profile">
-                        
+                        <!-- barra para enviar mensaje -->
                     </div>
-
-                    <div id="other-profile" class="me-profile">
-                        
-                    </div>
-                
+                    <!-- contenedor de la parte para ver y enviar mensajes-->
                 </div>
-              </div>
-       
-            </div>
 
-            <div class="chat-send-messages">
-                            <input id="message" class="send-messages" type="text" />
-                            <button type="button" class="btn btn-success btnSend"> 
-                                <i class="fa-sharp fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-          </div>
+
+
+                <div class="col-4 user-box">
+                    <!-- contenedor de los perfiles -->
+                    <div class="content-user-box">    
+                        <!-- Tu perfil -->
+                        <div id="me-profile" class="me-profile"></div>
+                        <!-- Perfil del chat -->
+                        <div id="other-profile" class="me-profile"></div>
+                    </div>
+                    <!-- contenedor de los perfiles -->
+                </div>
+   
+
 
     </div>
 
 
-    <button type="button" class="btn btn-success btnEmpanada" hide> 
+    <button type="button" class="btn btn-success btnEmpanada" disabled style="display: none"> 
         <i class="fa-sharp fa-solid fa-paper-plane"></i>
     </button>
 
