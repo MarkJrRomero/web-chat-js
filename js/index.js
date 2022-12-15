@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 
@@ -16,18 +16,46 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+let URLactual = window.location.pathname;
+
+// VALIDAR SI SE ESTA LOGEADO
+async function validarLogin(){
+  const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+  // console.log(dataUser);
+  if(dataUser == null){
+    window.location.href = "./index.html";
+  }
+}
+
+async function validarLogin2(){
+  const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+  // console.log(dataUser);
+  if(dataUser != null){
+    window.location.href = "./home.html";
+  }
+}
+
+if(URLactual == '/home.html'){
+await validarLogin();
+}else{
+  await validarLogin2();
+}
+
 
 async function getMyContacts(){
   let listaDeContactos = "";
   const users = await getDocs(collection(db, `users`));
   users.forEach((doc) => {
     // console.log(doc.data().first);
-    listaDeContactos = listaDeContactos + 
-    `<div class="users-chat">
-      <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
-      <span class="last-message">${doc.data().name}</span>
-      <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
-    </div>`
+    const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+    if(dataUser.uid != doc.data().uid){
+      listaDeContactos = listaDeContactos + 
+      `<div class="users-chat">
+        <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
+        <span class="last-message">${doc.data().name}</span>
+        <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
+      </div>`
+    }
   });
   // console.log(listaUsers);
   $('#myContacts').html(listaDeContactos);
@@ -67,7 +95,17 @@ async function getMessagesUser(){
               </div>
               <p class="text-message">${doc.data().message}</p>
           </div>`
+
+          let userProfileHtml = 
+            ` <img class="profile-image" src="${image}" alt="${doc.data().name}">
+              <span class="profile-name">${doc.data().name}</span>
+              <span class="profile-name">(In the chat)</span>
+            `;
+          
+            $('#other-profile').html(userProfileHtml);
       }
+
+          
       
     }); 
   
@@ -107,24 +145,24 @@ $( "#addUser" ).click(async function() {
 });
 
 // Agregar el usuario
-$( "#addUserAction" ).click(async function() {
-  const myUserId = "myUserIdDePrueba";
-  let userName = $('select[name="find-user-input"] option:selected').text();
-  let userImage = $('select[name="find-user-input"] option:selected').attr('image');
-  let userId = $('select[name="find-user-input"] option:selected').val();
+// $( "#addUserAction" ).click(async function() {
+//   const myUserId = "myUserIdDePrueba";
+//   let userName = $('select[name="find-user-input"] option:selected').text();
+//   let userImage = $('select[name="find-user-input"] option:selected').attr('image');
+//   let userId = $('select[name="find-user-input"] option:selected').val();
 
-  try {
-    const docRef = await addDoc(collection(db, `${myUserId}CONTACTS`), {
-      name: userName,
-      uid: userId,
-      image: userImage
-    });
-    $('#modalAddUser').modal("hide");
-    getMyContacts();
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-});
+//   try {
+//     const docRef = await addDoc(collection(db, `${myUserId}CONTACTS`), {
+//       name: userName,
+//       uid: userId,
+//       image: userImage
+//     });
+//     $('#modalAddUser').modal("hide");
+//     getMyContacts();
+//   } catch (e) {
+//     console.error("Error adding document: ", e);
+//   }
+// });
 
 
 // ENVIAR MENSAJE
@@ -275,7 +313,7 @@ async function saveDataUser(){
     
       window.location.href = "./home.html";
   } catch (e) {
-    console.error("Error adding document: ", e);
+    console.error("Error al guardar usuario: ", e);
   }
 
 
@@ -290,5 +328,42 @@ function buscarMensajes() {
   setInterval(getMessagesUser, 500);
 }
 
-buscarMensajes();
 
+
+
+async function getUserProfile(){
+  const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+
+  let userProfileHtml = 
+  ` <img class="profile-image" src="${dataUser.photoURL}" alt="${dataUser.displayName}">
+    <span class="profile-name">${dataUser.displayName}</span>
+    <span class="profile-name">${dataUser.email}</span>
+    <button type="button" uid="${dataUser.uid}" class="btn btn-danger logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+    
+  `;
+
+  $('#me-profile').html(userProfileHtml);
+
+}
+
+
+const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+if(dataUser != null){
+  buscarMensajes();
+  getUserProfile();
+}
+
+// LogoutGoogle
+$( ".logout" ).click(async function() {
+  localStorage.clear();
+  let uid = $('.logout').attr('uid');
+  let users = await getDocs(query(collection(db, 'users')));
+  // console.log(users);
+  users.forEach((docs) => {
+    if(docs.data().uid == uid){
+      let docRef = doc(db, "users", docs.id);
+      deleteDoc(docRef);
+    }
+  });
+  validarLogin();
+});

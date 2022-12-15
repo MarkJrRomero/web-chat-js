@@ -256,6 +256,33 @@ body {
     align-items: center;
 }
 
+.me-profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    height: 50%;
+}
+
+.profile-image{
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 5px;
+}
+
+.profile-name{
+    color: aliceblue;
+    margin-bottom: 4px;
+}
+
+.other-profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    height: 50%;
+}
 
 
 /* Responsive */
