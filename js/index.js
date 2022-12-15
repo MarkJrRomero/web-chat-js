@@ -363,10 +363,21 @@ $( ".btnEmpanada" ).click(async function() {
   getMessagesUser();
 });
 
+
+
 // RESPONSIVE
+
+let ventana_ancho = $(window).width();
+  // console.log(ventana_ancho);
+  if(ventana_ancho < 601){
+    $("#row-chat-box").removeClass("row");
+  }else{
+    $("#row-chat-box").addClass("row");
+  } 
+
 $(window).resize(function() {
   let ventana_ancho = $(window).width();
-  console.log(ventana_ancho);
+  // console.log(ventana_ancho);
   if(ventana_ancho < 601){
     $("#row-chat-box").removeClass("row");
   }else{
