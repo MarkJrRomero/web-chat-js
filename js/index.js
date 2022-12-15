@@ -53,7 +53,7 @@ async function getMyContacts(){
       `<div class="users-chat">
         <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
         <span class="last-message">${doc.data().name}</span>
-        <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
+        <button onclick="saveUserRef('${doc.data().email}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
       </div>`
     }
   });
@@ -66,7 +66,7 @@ async function getMessagesUser(){
   // console.log('reload')
   const uid = localStorage.getItem("uidUsuarioContact");
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-  const myUserId = dataUser.uid;
+  const myUserId = dataUser.email;
 
   // console.log(`${myUserId}SMS${uid}`);
 
@@ -174,7 +174,7 @@ $( ".btnSend" ).click(async function() {
     if(message != '' && uid != null){
       
       const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-      const myUserId = dataUser.uid;
+      const myUserId = dataUser.email;
       const name = dataUser.displayName;
       const image = dataUser.photoURL;
 
@@ -220,7 +220,7 @@ $(document).on('keypress',async function(e) {
     if(message != '' && uid != null){
 
       const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-      const myUserId = dataUser.uid;
+      const myUserId = dataUser.email;
       const name = dataUser.displayName;
       const image = dataUser.photoURL;
 
@@ -303,7 +303,7 @@ async function saveDataUser(){
     const docRef = await addDoc(collection(db, `users`), {
       name: dataUser.displayName,
       image: dataUser.photoURL,
-      uid: dataUser.uid,
+      uid: dataUser.email,
     });
     
       window.location.href = "./home.html";
@@ -321,6 +321,7 @@ $( "#loginGoogle" ).click(async function() {
 
 function buscarMensajes() {
   setInterval(getMessagesUser, 500);
+  setInterval(getMyContacts, 3000);
 }
 
 
@@ -333,7 +334,7 @@ async function getUserProfile(){
   ` <img class="profile-image" src="${dataUser.photoURL}" alt="${dataUser.displayName}">
     <span class="profile-name">${dataUser.displayName}</span>
     <span class="profile-name">${dataUser.email}</span>
-    <button type="button" uid="${dataUser.uid}" class="btn btn-danger logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+    <button type="button" uid="${dataUser.email}" class="btn btn-danger logout"><i class="fa-solid fa-right-from-bracket"></i></button>
     
   `;
 
@@ -346,7 +347,6 @@ const dataUser = JSON.parse(localStorage.getItem("dataUser"));
 if(dataUser != null){
   buscarMensajes();
   getUserProfile();
-  await getMyContacts();
 }
 
 // LogoutGoogle
