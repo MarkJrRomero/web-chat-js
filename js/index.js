@@ -265,9 +265,9 @@ async function saveDataUser(){
     if(docs.data().uid == dataUser.email){
       existe = true;
       docRef = doc(db, "users", docs.id);
-    }
-    if(docs.data().online == true){
-      adentro = true;
+      if(docs.data().online == true){
+        adentro = true;
+      }
     }
   });
   
