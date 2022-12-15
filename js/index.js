@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 
@@ -48,12 +48,12 @@ async function getMyContacts(){
   users.forEach((doc) => {
     // console.log(doc.data().first);
     const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-    if(dataUser.email != doc.data().uid){
+    if(dataUser.uid != doc.data().uid){
       listaDeContactos = listaDeContactos + 
       `<div class="users-chat">
         <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}" alt="user_profile">
         <span class="last-message">${doc.data().name}</span>
-        <button onclick="saveUserRef('${doc.data().email}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
+        <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
       </div>`
     }
   });
@@ -62,20 +62,21 @@ async function getMyContacts(){
 }
 
 
-async function getMessagesUser(){
-  // console.log('reload')
+function getMessagesUser(){
+  
   const uid = localStorage.getItem("uidUsuarioContact");
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
   const myUserId = dataUser.email;
-
+  
   // console.log(`${myUserId}SMS${uid}`);
-
-  let listaDeSms = ""; 
-  let users = await getDocs(query(collection(db, `${myUserId}SMS${uid}`), orderBy('time',"desc")));
-
-    users.forEach((doc) => {
-    
+  onSnapshot(collection(db, `${myUserId}SMS${uid}`), (querySnapshot) => {
+    console.log('change')
+    // console.log(querySnapshot);
+    let listaDeSms = ""; 
+    querySnapshot.forEach((doc) => {
+      
       let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
+      
   
       if (doc.data().uid == myUserId){
         listaDeSms = listaDeSms + 
@@ -105,13 +106,13 @@ async function getMessagesUser(){
             $('#other-profile').html(userProfileHtml);
       }
 
-          
-      
+      // console.log(listaDeSms);
+    
     }); 
+    $('#chat-box-messages').html(listaDeSms);
+  })
   
   
-  // console.log(listaDeSms);
-  $('#chat-box-messages').html(listaDeSms);
 }
 
 // ACTIONS =================================
@@ -203,7 +204,7 @@ $( ".btnSend" ).click(async function() {
         });
         
         $('#message').val('')
-        getMessagesUser();
+        // getMessagesUser();
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -249,27 +250,13 @@ $(document).on('keypress',async function(e) {
         });
         
         $('#message').val('')
-        getMessagesUser();
+        // getMessagesUser();
       } catch (e) {
         console.error("Error adding document: ", e);
       }
     }
   }
 });
-
-
-
-
-$( ".verSmsUid" ).click(async function() {
-  // console.log('here');
-  setTimeout(()=> { getMessagesUser(); },500);
-});
-
-$( ".user-profile" ).click(async function() {
-  // console.log('here');
-  setTimeout(()=> { getMessagesUser(); },500);
-});
-
 
 
 // Login google
@@ -320,8 +307,8 @@ $( "#loginGoogle" ).click(async function() {
 
 
 function buscarMensajes() {
-  setInterval(getMessagesUser, 500);
-  setInterval(getMyContacts, 500);
+  // setInterval(getMessagesUser, 500);
+  getMyContacts();
 }
 
 
@@ -333,7 +320,6 @@ async function getUserProfile(){
   let userProfileHtml = 
   ` <img class="profile-image" src="${dataUser.photoURL}" alt="${dataUser.displayName}">
     <span class="profile-name">${dataUser.displayName}</span>
-    <span class="profile-name">${dataUser.email}</span>
     <button type="button" uid="${dataUser.email}" class="btn btn-danger logout"><i class="fa-solid fa-right-from-bracket"></i></button>
     
   `;
@@ -362,4 +348,10 @@ $( ".logout" ).click(async function() {
     }
   });
   validarLogin();
+});
+
+
+$( ".btnEmpanada" ).click(async function() {
+  // console.log('here');
+  getMessagesUser();
 });
