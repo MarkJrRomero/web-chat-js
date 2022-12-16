@@ -69,6 +69,32 @@ async function getMyContacts(){
   })
 }
 
+function notificacion(data){
+
+  const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+  console.log(data.notifi);
+  console.log(dataUser.email);
+  if(data.uid != dataUser.email){
+    if (Notification.permission === "granted") {
+      var body = data.message;
+      var icon = data.image;
+      var title = data.name;
+      var options = {
+          body: body,      //El texto o resumen de lo que deseamos notificar.
+          icon: icon,      //El URL de una imágen para usarla como icono.
+          lang: "ES",      //El idioma utilizado en la notificación.
+          tag: 'notify',   //Un ID para el elemento para hacer get/set de ser necesario.
+          dir: 'auto',     // izquierda o derecha (auto).
+          renotify: "true" //Se puede volver a usar la notificación, default: false.
+      }
+      // Creamos la notificación con las opciones que pusimos arriba.
+      var notification = new Notification(title,options);
+      // Cerramos la notificación.
+      setTimeout(notification.close.bind(notification), 5000);
+    }
+  }
+  
+}
 
 function getMessagesUser(){
   
@@ -79,28 +105,8 @@ function getMessagesUser(){
   // console.log(`${myUserId}SMS${uid}`);
   onSnapshot(query(collection(db, `${myUserId}SMS${uid}`), orderBy("time","desc")), (querySnapshot) => {
     // console.log('change')
-    // console.log(querySnapshot);
 
-    // if (Notification.permission === "granted") {
-    //   // Si está bien vamos a crear una notificación
-    //   // Primero vamos a crear una variables las 
-    //   // cuales forman nuestra norificación
-    //   var body = "Hola";
-    //   var icon = "../assets/icono.png";
-    //   var title = "Haz resivido un mensaje de";
-    //   var options = {
-    //       body: body,      //El texto o resumen de lo que deseamos notificar.
-    //       icon: icon,      //El URL de una imágen para usarla como icono.
-    //       lang: "ES",      //El idioma utilizado en la notificación.
-    //       tag: 'notify',   //Un ID para el elemento para hacer get/set de ser necesario.
-    //       dir: 'auto',     // izquierda o derecha (auto).
-    //       renotify: "true" //Se puede volver a usar la notificación, default: false.
-    //   }
-    //   // Creamos la notificación con las opciones que pusimos arriba.
-    //   var notification = new Notification(title,options);
-    //   // Cerramos la notificación.
-    //   setTimeout(notification.close.bind(notification), 5000);
-    // }
+    notificacion(querySnapshot.docs[0].data());
 
     let listaDeSms = ""; 
     querySnapshot.forEach((doc) => {
@@ -224,7 +230,8 @@ async function sendSms(){
           image: image,
           uid: myUserId,
           message: message,
-          time: serverTimestamp()
+          time: serverTimestamp(),
+          notifi: false
         });
 
         await addDoc(collection(db, collect2), {
