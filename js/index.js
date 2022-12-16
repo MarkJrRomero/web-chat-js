@@ -89,7 +89,7 @@ function notificacion(data, id){
 
               updateDoc(docRef, data)
               .then(docRef => {
-                console.log('esoo');
+                // console.log('esoo');
               })
               .catch(error => {
                   console.log(error);
@@ -102,8 +102,8 @@ function notificacion(data, id){
           timeout: 8000,               // Timeout before notification closes automatically.
           vibrate: [100, 100, 100],    // An array of vibration pulses for mobile devices.
           onClick: function() {
-              // Callback for when the notification is clicked. 
-              console.log(this);
+            window.focus();
+            this.close();
           }  
         });
      }
