@@ -96,23 +96,18 @@ function notificacion(data, id){
               })
 
     if (Notification.permission === "granted") {
-      var body = message;
-      var icon = image;
-      var title = name;
-      var options = {
-          body: body,      //El texto o resumen de lo que deseamos notificar.
-          icon: icon,      //El URL de una imágen para usarla como icono.
-          lang: "ES",      //El idioma utilizado en la notificación.
-          tag: 'notify',   //Un ID para el elemento para hacer get/set de ser necesario.
-          dir: 'auto',     // izquierda o derecha (auto).
-          renotify: "true" //Se puede volver a usar la notificación, default: false.
-      }
-      // Creamos la notificación con las opciones que pusimos arriba.
-      var notification = new Notification(title,options);
-      // Cerramos la notificación.
-      setTimeout(notification.close.bind(notification), 5000);
+        Push.create(name, {
+          body: message,
+          icon: image,
+          timeout: 8000,               // Timeout before notification closes automatically.
+          vibrate: [100, 100, 100],    // An array of vibration pulses for mobile devices.
+          onClick: function() {
+              // Callback for when the notification is clicked. 
+              console.log(this);
+          }  
+        });
+     }
     }
-  }
   
 }
 
@@ -489,3 +484,15 @@ if (Notification.permission !== 'denied') {
       // Acción si el usuario acepta.
   });
 }
+
+
+Push.create('Hi there!', {
+  body: 'This is a notification.',
+  icon: 'icon.png',
+  timeout: 8000,               // Timeout before notification closes automatically.
+  vibrate: [100, 100, 100],    // An array of vibration pulses for mobile devices.
+  onClick: function() {
+      // Callback for when the notification is clicked. 
+      console.log(this);
+  }  
+});
