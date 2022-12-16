@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, 
+  collection, addDoc, getDocs, query, 
+  orderBy, deleteDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 
@@ -50,12 +52,13 @@ async function getMyContacts(){
     querySnapshot.forEach((doc) => {
       // console.log('change users')
       const dataUser = JSON.parse(localStorage.getItem("dataUser"));
+
+      let color = doc.data().online == true ? '#186b1f49' : '#6b181849';
       if(dataUser.email != doc.data().uid){
         listaDeContactos = listaDeContactos + 
-        `<div class="users-chat">
+        `<div class="users-chat" style="background-color: ${color};">
           <img onclick="saveUserRef('${doc.data().uid}')" class="user-profile" src="${doc.data().image}">
           <span class="last-message">${doc.data().name}</span>
-          <span class="last-message">Online: ${doc.data().online}</span>
           <button onclick="saveUserRef('${doc.data().uid}')" type="button" class="btn btn-primary verSmsUid"> <i class="fa-solid fa-comment"></i></button>
         </div>`
       }
@@ -77,12 +80,33 @@ function getMessagesUser(){
   onSnapshot(query(collection(db, `${myUserId}SMS${uid}`), orderBy("time","desc")), (querySnapshot) => {
     // console.log('change')
     // console.log(querySnapshot);
+
+    // if (Notification.permission === "granted") {
+    //   // Si está bien vamos a crear una notificación
+    //   // Primero vamos a crear una variables las 
+    //   // cuales forman nuestra norificación
+    //   var body = "Hola";
+    //   var icon = "../assets/icono.png";
+    //   var title = "Haz resivido un mensaje de";
+    //   var options = {
+    //       body: body,      //El texto o resumen de lo que deseamos notificar.
+    //       icon: icon,      //El URL de una imágen para usarla como icono.
+    //       lang: "ES",      //El idioma utilizado en la notificación.
+    //       tag: 'notify',   //Un ID para el elemento para hacer get/set de ser necesario.
+    //       dir: 'auto',     // izquierda o derecha (auto).
+    //       renotify: "true" //Se puede volver a usar la notificación, default: false.
+    //   }
+    //   // Creamos la notificación con las opciones que pusimos arriba.
+    //   var notification = new Notification(title,options);
+    //   // Cerramos la notificación.
+    //   setTimeout(notification.close.bind(notification), 5000);
+    // }
+
     let listaDeSms = ""; 
     querySnapshot.forEach((doc) => {
-      // console.log(doc.data());
+      // console.log(doc);
       let image = doc.data().image == '' || doc.data().image == undefined ? "./assets/default.jpg" :  doc.data().image;
       
-  
       if (doc.data().uid == myUserId){
         listaDeSms = listaDeSms + 
         `<div class="message-me">
@@ -93,6 +117,7 @@ function getMessagesUser(){
               <p class="text-me">${doc.data().message}</p>
           </div>`
       }else{
+        localStorage.setItem("uidUsuarioContact", doc.data().uid);
         listaDeSms = listaDeSms + 
         `<div class="message-friend">
               <div class="profile-message-div">
@@ -109,6 +134,7 @@ function getMessagesUser(){
             `;
           
             $('#other-profile').html(userProfileHtml);
+            
       }
 
       // console.log(listaDeSms);
@@ -198,7 +224,7 @@ async function sendSms(){
           image: image,
           uid: myUserId,
           message: message,
-          time: now
+          time: serverTimestamp()
         });
 
         await addDoc(collection(db, collect2), {
@@ -206,7 +232,7 @@ async function sendSms(){
           image: image,
           uid: myUserId,
           message: message,
-          time: now
+          time: serverTimestamp()
         });
         
 
@@ -337,7 +363,8 @@ async function getUserProfile(){
     
   `;
 
-  let navProfileHtml = `<img class="nav-profile" src="${dataUser.photoURL}">
+  let navProfileHtml = 
+  `<img class="nav-profile" src="${dataUser.photoURL}">
   <button type="button" uid="${dataUser.email}" class="btn btn-danger logout NavBtn"><i class="fa-solid fa-right-from-bracket"></i></button>`
 
   $('#nav-profile-div').html(navProfileHtml);
@@ -404,7 +431,6 @@ $( ".btnEmpanada" ).click(async function() {
 
 
 // RESPONSIVE
-
 let ventana_ancho = $(window).width();
   // console.log(ventana_ancho);
   if(ventana_ancho < 601){
@@ -423,7 +449,13 @@ $(window).resize(function() {
   } 
   
 });
-// RESPONSIVE
 
-// let time = new firebase.firestore.timestamp.now();
-// console.log(time);
+
+
+
+// PERMISO NOTIFICACIONES
+if (Notification.permission !== 'denied') {
+  Notification.requestPermission(function (permission) {
+      // Acción si el usuario acepta.
+  });
+}
