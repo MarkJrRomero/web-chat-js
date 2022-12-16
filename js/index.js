@@ -72,7 +72,7 @@ async function getMyContacts(){
 function notificacion(data){
 
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-  console.log(data.notifi);
+  console.log(data);
   console.log(dataUser.email);
   if(data.uid != dataUser.email){
     if (Notification.permission === "granted") {
@@ -239,7 +239,8 @@ async function sendSms(){
           image: image,
           uid: myUserId,
           message: message,
-          time: serverTimestamp()
+          time: serverTimestamp(),
+          notifi: false
         });
         
 
