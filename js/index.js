@@ -120,7 +120,7 @@ function getMessagesUser(){
   // console.log(`${myUserId}SMS${uid}`);
   onSnapshot(query(collection(db, `${myUserId}SMS${uid}`), orderBy("time","desc")), (querySnapshot) => {
     // console.log('change')
-
+    $('#chat-box-messages').html('');
     if(querySnapshot.docs[0] != undefined){
       notificacion(querySnapshot.docs[0].data(), querySnapshot.docs[0].id);
     }
@@ -164,6 +164,7 @@ function getMessagesUser(){
     
     }); 
     $('#chat-box-messages').html(listaDeSms);
+    $("#chat-box-messages").animate({ scrollTop: $('#chat-box-messages').prop("scrollHeight")}, 1000);
   })
   
   
