@@ -69,16 +69,36 @@ async function getMyContacts(){
   })
 }
 
-function notificacion(data){
-
+function notificacion(data, id){
+  // console.log(data.name);
+  let name = data.name;
+  let message = data.message;
+  let image = data.image;
   const dataUser = JSON.parse(localStorage.getItem("dataUser"));
-  console.log(data);
-  console.log(dataUser.email);
-  if(data.uid != dataUser.email){
+  const myUserId = dataUser.email;
+  const uid = data.uid;
+
+  if(data.uid != dataUser.email && data.notifi == false){
+
+    let collect1 = `${myUserId}SMS${uid}`;
+    const docRef = doc(db, collect1, id);
+
+              const data = {
+                notifi: true
+              };
+
+              updateDoc(docRef, data)
+              .then(docRef => {
+                console.log('esoo');
+              })
+              .catch(error => {
+                  console.log(error);
+              })
+
     if (Notification.permission === "granted") {
-      var body = data.message;
-      var icon = data.image;
-      var title = data.name;
+      var body = message;
+      var icon = image;
+      var title = name;
       var options = {
           body: body,      //El texto o resumen de lo que deseamos notificar.
           icon: icon,      //El URL de una imágen para usarla como icono.
@@ -106,7 +126,9 @@ function getMessagesUser(){
   onSnapshot(query(collection(db, `${myUserId}SMS${uid}`), orderBy("time","desc")), (querySnapshot) => {
     // console.log('change')
 
-    notificacion(querySnapshot.docs[0].data());
+    if(querySnapshot.docs[0] != undefined){
+      notificacion(querySnapshot.docs[0].data(), querySnapshot.docs[0].id);
+    }
 
     let listaDeSms = ""; 
     querySnapshot.forEach((doc) => {
